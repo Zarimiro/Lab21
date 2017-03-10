@@ -4,9 +4,12 @@
 #include<math.h>
 
 #define EDIT1  110
+#define EDIT2 111
 #define EDIT3  112
 #define BUTTON 113
 #define BUTTON2 114
+#define BUTTON3 115
+#define BUTTON4 116
 
 
 
@@ -14,7 +17,7 @@
 static TCHAR szWindowClass[] = ("win32app");
 static TCHAR szTitle[] = ("Calculator");
 
-													  
+
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 void int_convertion(HWND hWnd);
 
@@ -24,7 +27,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	LPSTR lpCmdLine,
 	int nCmdShow)
 {
-	
+
 	WNDCLASSEX wcex;
 	wcex.cbSize = sizeof(WNDCLASSEX);
 	wcex.style = CS_HREDRAW | CS_VREDRAW;
@@ -39,7 +42,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	wcex.lpszClassName = szWindowClass;
 	wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_APPLICATION));
 
-	
+
 	if (!RegisterClassEx(&wcex))
 	{
 		MessageBox(NULL,
@@ -50,7 +53,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		return 1;
 	}
 
-	
+
 	HWND hWnd = CreateWindow(
 		szWindowClass,
 		szTitle,
@@ -72,7 +75,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		return 1;
 	}
 
-	
+
 	ShowWindow(hWnd,
 		nCmdShow);
 	UpdateWindow(hWnd);
@@ -107,20 +110,31 @@ void SetDlgItemDouble(HWND hDlg, int id, double VAL)
 	SetDlgItemText(hDlg, id, Bf);
 }
 
+void summ(HWND hWnd) {
+	double a = GetDlgItemDouble(hWnd, EDIT1);
+	double b = GetDlgItemDouble(hWnd, EDIT2);
+	double d = a + b;
+	SetDlgItemDouble(hWnd, EDIT3, d);
+}
 
+
+void diff(HWND hWnd) {
+	double a = GetDlgItemDouble(hWnd, EDIT1);
+	double b = GetDlgItemDouble(hWnd, EDIT2);
+	double d = a - b;
+	SetDlgItemDouble(hWnd, EDIT3, d);
+}
 void int_convertion(HWND hWnd)
 {
-	
-	double a = GetDlgItemDouble(hWnd, EDIT1);
-	
-	int d = a;
 
-	SetDlgItemInt(hWnd, EDIT3, d,true);
+	double a = GetDlgItemDouble(hWnd, EDIT3);
+	int d = a;
+	SetDlgItemInt(hWnd, EDIT3, d, true);
 }
 
 void rounding(HWND hWnd) {
-	double a = GetDlgItemDouble(hWnd, EDIT1);
-	int d=a+.5;
+	double a = GetDlgItemDouble(hWnd, EDIT3);
+	int d = a + .5;
 	SetDlgItemInt(hWnd, EDIT3, d, true);
 }
 
@@ -129,24 +143,36 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	switch (message)
 	{
 	case WM_CREATE:
-		
+
 		CreateWindowEx(WS_EX_CLIENTEDGE, TEXT("EDIT"), TEXT(""),
 			WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL | WS_TABSTOP,
 			20, 10, 85, 25, hWnd, HMENU(EDIT1), GetModuleHandle(NULL), NULL);
+
+		CreateWindowEx(WS_EX_CLIENTEDGE, TEXT("EDIT"), TEXT(""),
+			WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL | WS_TABSTOP,
+			120, 10, 85, 25, hWnd, HMENU(EDIT2), GetModuleHandle(NULL), NULL);
 
 
 		CreateWindowEx(WS_EX_CLIENTEDGE, TEXT("EDIT"), TEXT(""),
 			WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL | WS_TABSTOP,
 			20, 85, 85, 25, hWnd, HMENU(EDIT3), GetModuleHandle(NULL), NULL);
 
-		
+
 		CreateWindowEx(NULL, TEXT("BUTTON"), TEXT("Convert to int"),
 			WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON | WS_TABSTOP,
-			20, 45, 100, 30, hWnd, HMENU(BUTTON), GetModuleHandle(NULL), NULL);
+			20, 155, 100, 30, hWnd, HMENU(BUTTON), GetModuleHandle(NULL), NULL);
 
 		CreateWindowEx(NULL, TEXT("BUTTON"), TEXT("Rounding"),
 			WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON | WS_TABSTOP,
-			130, 45, 100, 30, hWnd, HMENU(BUTTON2), GetModuleHandle(NULL), NULL);
+			20, 120, 100, 30, hWnd, HMENU(BUTTON2), GetModuleHandle(NULL), NULL);
+
+		CreateWindowEx(NULL, TEXT("BUTTON"), TEXT("Summ"),
+			WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON | WS_TABSTOP,
+			20, 40, 100, 30, hWnd, HMENU(BUTTON3), GetModuleHandle(NULL), NULL);
+
+		CreateWindowEx(NULL, TEXT("BUTTON"), TEXT("Diff"),
+			WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON | WS_TABSTOP,
+			130, 40, 100, 30, hWnd, HMENU(BUTTON4), GetModuleHandle(NULL), NULL);
 
 		break;
 	case WM_DESTROY:
@@ -162,8 +188,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case BUTTON2:
 			rounding(hWnd);
 			return 1;
+			break;
+		case BUTTON3:
+			summ(hWnd);
+			return 1;
+			break;
+		case BUTTON4:
+			diff(hWnd);
+			return 1;
+			break;
 		}
-		
+
 		break;
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
